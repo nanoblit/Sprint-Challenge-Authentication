@@ -1,9 +1,5 @@
 const db = require('./dbConfig');
 
-function getUsers() {
-  return db('users');
-}
-
 function getUserById(id) {
   return db('users')
     .where({ id })
@@ -21,4 +17,4 @@ async function addUser(data) {
   return getUserById(id);
 }
 
-module.exports = { getUsers, getUserByName, addUser };
+module.exports = { getUserByName, addUser };

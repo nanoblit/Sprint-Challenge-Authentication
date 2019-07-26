@@ -1,9 +1,12 @@
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const express = require('express');
 
 const db = require('../database/db');
 const { authenticate } = require('../auth/authenticate');
+
+const router = express.Router();
 
 function generateToken(user) {
   const payload = {
@@ -18,7 +21,7 @@ function generateToken(user) {
   return jwt.sign(payload, 'Some sweet secret', options);
 }
 
-async function register(req, res, next) {
+router.post('/api/register', async (req, res, next) => {
   try {
     const { body } = req;
     if (!body.username || !body.password) {
@@ -33,9 +36,9 @@ async function register(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function login(req, res, next) {
+router.post('/api/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await db.getUserByName(username);
@@ -48,9 +51,9 @@ async function login(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-function getJokes(req, res, next) {
+router.get('/api/jokes', (req, res, next) => {
   const requestOptions = {
     headers: { accept: 'application/json' },
   };
@@ -63,10 +66,6 @@ function getJokes(req, res, next) {
     .catch(err => {
       next(err);
     });
-}
+});
 
-module.exports = server => {
-  server.post('/api/register', register);
-  server.post('/api/login', login);
-  server.get('/api/jokes', authenticate, getJokes);
-};
+module.exports = router;
